@@ -501,8 +501,6 @@ class MPRestClient {
     }
 
     private static function exec($request) {
-    // private static function exec($method, $uri, $data, $content_type) {
-
         $connect = self::build_request($request);
 
         $api_result = curl_exec($connect);
@@ -518,13 +516,16 @@ class MPRestClient {
         );
 
         if ($response['status'] >= 400) {
-            $message = $response['response']['message'];
-            if (isset ($response['response']['cause'])) {
-                if (isset ($response['response']['cause']['code']) && isset ($response['response']['cause']['description'])) {
-                    $message .= " - ".$response['response']['cause']['code'].': '.$response['response']['cause']['description'];
-                } else if (is_array ($response['response']['cause'])) {
-                    foreach ($response['response']['cause'] as $cause) {
-                        $message .= " - ".$cause['code'].': '.$cause['description'];
+           
+            if (isset($response['response']['ErrorMessage']))
+                $message = $response['response']['ErrorMessage'];
+            
+            if (isset($response['response']['ErrorCause'])) {
+                if (isset($response['response']['ErrorCause']['ErrorCode']) && isset($response['response']['cause']['description'])) {
+                    $message .= " - " . $response['response']['ErrorCause']['ErrorCode'] . ': ' . $response['response']['cause']['description'];
+                } else if (is_array($response['response']['ErrorCause'])) {
+                    foreach ($response['response']['ErrorCause'] as $cause) {
+                        $message .= " - " . $cause['ErrorCode'] . ': ' . $cause['description'] ?? null;
                     }
                 }
             }
