@@ -13,7 +13,8 @@ use Exception;
  */
 $GLOBALS["LIB_LOCATION"] = dirname(__FILE__);
 
-class MP {
+class MP
+{
 
     const version = "0.5.2";
 
@@ -23,8 +24,9 @@ class MP {
     private $access_data;
     private $sandbox = FALSE;
 
-    function __construct() {
-        $i = func_num_args(); 
+    function __construct()
+    {
+        $i = func_num_args();
 
         if ($i > 2 || $i < 1) {
             throw new MercadoPagoException("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
@@ -40,7 +42,8 @@ class MP {
         }
     }
 
-    public function sandbox_mode($enable = NULL) {
+    public function sandbox_mode($enable = NULL)
+    {
         if (!is_null($enable)) {
             $this->sandbox = $enable === TRUE;
         }
@@ -51,8 +54,9 @@ class MP {
     /**
      * Get Access Token for API use
      */
-    public function get_access_token() {
-        if (isset ($this->ll_access_token) && !is_null($this->ll_access_token)) {
+    public function get_access_token()
+    {
+        if (isset($this->ll_access_token) && !is_null($this->ll_access_token)) {
             return $this->ll_access_token;
         }
 
@@ -71,7 +75,7 @@ class MP {
         ));
 
         if ($access_data["status"] != 200) {
-            throw new MercadoPagoException ($access_data['response']['message'], $access_data['status']);
+            throw new MercadoPagoException($access_data['response']['message'], $access_data['status']);
         }
 
         $this->access_data = $access_data['response'];
@@ -84,11 +88,12 @@ class MP {
      * @param int $id
      * @return array(json)
      */
-    public function get_payment($id) {
+    public function get_payment($id)
+    {
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
-            
+
         $request = array(
-            "uri" => $uri_prefix."/collections/notifications/{$id}",
+            "uri" => $uri_prefix . "/collections/notifications/{$id}",
             "params" => array(
                 "access_token" => $this->get_access_token()
             )
@@ -97,7 +102,8 @@ class MP {
         $payment_info = MPRestClient::get($request);
         return $payment_info;
     }
-    public function get_payment_info($id) {
+    public function get_payment_info($id)
+    {
         return $this->get_payment($id);
     }
 
@@ -105,8 +111,9 @@ class MP {
      * Get information for specific authorized payment
      * @param id
      * @return array(json)
-    */    
-    public function get_authorized_payment($id) {
+     */
+    public function get_authorized_payment($id)
+    {
         $request = array(
             "uri" => "/authorized_payments/{$id}",
             "params" => array(
@@ -123,7 +130,8 @@ class MP {
      * @param int $id
      * @return array(json)
      */
-    public function refund_payment($id) {
+    public function refund_payment($id)
+    {
         $request = array(
             "uri" => "/collections/{$id}",
             "params" => array(
@@ -143,7 +151,8 @@ class MP {
      * @param int $id
      * @return array(json)
      */
-    public function cancel_payment($id) {
+    public function cancel_payment($id)
+    {
         $request = array(
             "uri" => "/collections/{$id}",
             "params" => array(
@@ -163,7 +172,8 @@ class MP {
      * @param int $id
      * @return array(json)
      */
-    public function cancel_preapproval_payment($id) {
+    public function cancel_preapproval_payment($id)
+    {
         $request = array(
             "uri" => "/preapproval/{$id}",
             "params" => array(
@@ -185,15 +195,16 @@ class MP {
      * @param int $limit
      * @return array(json)
      */
-    public function search_payment($filters, $offset = 0, $limit = 0) {
+    public function search_payment($filters, $offset = 0, $limit = 0)
+    {
         $filters["offset"] = $offset;
         $filters["limit"] = $limit;
 
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
-            
+
         $request = array(
-            "uri" => $uri_prefix."/collections/search",
-            "params" => array_merge ($filters, array(
+            "uri" => $uri_prefix . "/collections/search",
+            "params" => array_merge($filters, array(
                 "access_token" => $this->get_access_token()
             ))
         );
@@ -207,7 +218,8 @@ class MP {
      * @param array $preference
      * @return array(json)
      */
-    public function create_preference($preference) {
+    public function create_preference($preference)
+    {
         $request = array(
             "uri" => "/checkout/preferences",
             "params" => array(
@@ -226,7 +238,8 @@ class MP {
      * @param array $preference
      * @return array(json)
      */
-    public function update_preference($id, $preference) {
+    public function update_preference($id, $preference)
+    {
         $request = array(
             "uri" => "/checkout/preferences/{$id}",
             "params" => array(
@@ -244,7 +257,8 @@ class MP {
      * @param string $id
      * @return array(json)
      */
-    public function get_preference($id) {
+    public function get_preference($id)
+    {
         $request = array(
             "uri" => "/checkout/preferences/{$id}",
             "params" => array(
@@ -261,7 +275,8 @@ class MP {
      * @param array $preapproval_payment
      * @return array(json)
      */
-    public function create_preapproval_payment($preapproval_payment) {
+    public function create_preapproval_payment($preapproval_payment)
+    {
         $request = array(
             "uri" => "/preapproval",
             "params" => array(
@@ -279,7 +294,8 @@ class MP {
      * @param string $id
      * @return array(json)
      */
-    public function get_preapproval_payment($id) {
+    public function get_preapproval_payment($id)
+    {
         $request = array(
             "uri" => "/preapproval/{$id}",
             "params" => array(
@@ -295,9 +311,10 @@ class MP {
      * Update a preapproval payment
      * @param string $preapproval_payment, $id
      * @return array(json)
-     */ 
-    
-    public function update_preapproval_payment($id, $preapproval_payment) {
+     */
+
+    public function update_preapproval_payment($id, $preapproval_payment)
+    {
         $request = array(
             "uri" => "/preapproval/{$id}",
             "params" => array(
@@ -313,13 +330,14 @@ class MP {
     /* Generic resource call methods */
 
     /**
-    * Generic resource get
-    * @param request
-    * @param params (deprecated)
-    * @param authenticate = true (deprecated)
-    */
-    public function get($request, $params = null, $authenticate = true) {
-        if (is_string ($request)) {
+     * Generic resource get
+     * @param request
+     * @param params (deprecated)
+     * @param authenticate = true (deprecated)
+     */
+    public function get($request, $params = null, $authenticate = true)
+    {
+        if (is_string($request)) {
             $request = array(
                 "uri" => $request,
                 "params" => $params,
@@ -327,9 +345,9 @@ class MP {
             );
         }
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
+        $request["params"] = isset($request["params"]) && is_array($request["params"]) ? $request["params"] : array();
 
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
+        if (!isset($request["authenticate"]) || $request["authenticate"] !== false) {
             $request["params"]["access_token"] = $this->get_access_token();
         }
 
@@ -338,13 +356,14 @@ class MP {
     }
 
     /**
-    * Generic resource post
-    * @param request
-    * @param data (deprecated)
-    * @param params (deprecated)
-    */
-    public function post($request, $data = null, $params = null) {
-        if (is_string ($request)) {
+     * Generic resource post
+     * @param request
+     * @param data (deprecated)
+     * @param params (deprecated)
+     */
+    public function post($request, $data = null, $params = null)
+    {
+        if (is_string($request)) {
             $request = array(
                 "uri" => $request,
                 "data" => $data,
@@ -352,9 +371,9 @@ class MP {
             );
         }
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
+        $request["params"] = isset($request["params"]) && is_array($request["params"]) ? $request["params"] : array();
 
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
+        if (!isset($request["authenticate"]) || $request["authenticate"] !== false) {
             $request["params"]["access_token"] = $this->get_access_token();
         }
 
@@ -363,13 +382,14 @@ class MP {
     }
 
     /**
-    * Generic resource put
-    * @param request
-    * @param data (deprecated)
-    * @param params (deprecated)
-    */
-    public function put($request, $data = null, $params = null) {
-        if (is_string ($request)) {
+     * Generic resource put
+     * @param request
+     * @param data (deprecated)
+     * @param params (deprecated)
+     */
+    public function put($request, $data = null, $params = null)
+    {
+        if (is_string($request)) {
             $request = array(
                 "uri" => $request,
                 "data" => $data,
@@ -377,9 +397,9 @@ class MP {
             );
         }
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
+        $request["params"] = isset($request["params"]) && is_array($request["params"]) ? $request["params"] : array();
 
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
+        if (!isset($request["authenticate"]) || $request["authenticate"] !== false) {
             $request["params"]["access_token"] = $this->get_access_token();
         }
 
@@ -388,22 +408,23 @@ class MP {
     }
 
     /**
-    * Generic resource delete
-    * @param request
-    * @param data (deprecated)
-    * @param params (deprecated)
-    */
-    public function delete($request, $params = null) {
-        if (is_string ($request)) {
+     * Generic resource delete
+     * @param request
+     * @param data (deprecated)
+     * @param params (deprecated)
+     */
+    public function delete($request, $params = null)
+    {
+        if (is_string($request)) {
             $request = array(
                 "uri" => $request,
                 "params" => $params
             );
         }
 
-        $request["params"] = isset ($request["params"]) && is_array ($request["params"]) ? $request["params"] : array();
+        $request["params"] = isset($request["params"]) && is_array($request["params"]) ? $request["params"] : array();
 
-        if (!isset ($request["authenticate"]) || $request["authenticate"] !== false) {
+        if (!isset($request["authenticate"]) || $request["authenticate"] !== false) {
             $request["params"]["access_token"] = $this->get_access_token();
         }
 
@@ -412,17 +433,18 @@ class MP {
     }
 
     /* **************************************************************************************** */
-
 }
 
 /**
  * MercadoPago cURL RestClient
  */
-class MPRestClient {
+class MPRestClient
+{
     const API_BASE_URL = "https://api.mercadopago.com";
 
-    private static function build_request($request) {
-        if (!extension_loaded ("curl")) {
+    private static function build_request($request)
+    {
+        if (!extension_loaded("curl")) {
             throw new MercadoPagoException("cURL extension not found. You need to enable cURL in your php.ini or another configuration you have.");
         }
 
@@ -451,7 +473,7 @@ class MPRestClient {
                     $form_content = $v == "application/x-www-form-urlencoded";
                 }
 
-                array_push ($headers, $h.": ".$v);
+                array_push($headers, $h . ": " . $v);
             }
         }
         if ($default_content_type) {
@@ -469,7 +491,7 @@ class MPRestClient {
         curl_setopt($connect, CURLOPT_HTTPHEADER, $headers);
 
         // Set parameters and url
-        if (isset ($request["params"]) && is_array($request["params"]) && count($request["params"]) > 0) {
+        if (isset($request["params"]) && is_array($request["params"]) && count($request["params"]) > 0) {
             $request["uri"] .= (strpos($request["uri"], "?") === false) ? "?" : "&";
             $request["uri"] .= self::build_query($request["params"]);
         }
@@ -484,10 +506,10 @@ class MPRestClient {
                     $request["data"] = json_encode($request["data"]);
                 }
 
-                if(function_exists('json_last_error')) {
+                if (function_exists('json_last_error')) {
                     $json_error = json_last_error();
                     if ($json_error != JSON_ERROR_NONE) {
-                        throw new MercadoPagoException("JSON Error [{$json_error}] - Data: ".$request["data"]);
+                        throw new MercadoPagoException("JSON Error [{$json_error}] - Data: " . $request["data"]);
                     }
                 }
             } else if ($form_content) {
@@ -500,14 +522,15 @@ class MPRestClient {
         return $connect;
     }
 
-    private static function exec($request) {
+    private static function exec($request)
+    {
         $connect = self::build_request($request);
 
         $api_result = curl_exec($connect);
         $api_http_code = curl_getinfo($connect, CURLINFO_HTTP_CODE);
 
         if ($api_result === FALSE) {
-            throw new MercadoPagoException (curl_error ($connect));
+            throw new MercadoPagoException(curl_error($connect));
         }
 
         $response = array(
@@ -515,11 +538,13 @@ class MPRestClient {
             "response" => json_decode($api_result, true)
         );
 
+        $message = "";
         if ($response['status'] >= 400) {
-           
+
+
             if (isset($response['response']['ErrorMessage']))
                 $message = $response['response']['ErrorMessage'];
-            
+
             if (isset($response['response']['ErrorCause'])) {
                 if (isset($response['response']['ErrorCause']['ErrorCode']) && isset($response['response']['cause']['description'])) {
                     $message .= " - " . $response['response']['ErrorCause']['ErrorCode'] . ': ' . $response['response']['cause']['description'];
@@ -530,7 +555,7 @@ class MPRestClient {
                 }
             }
 
-            throw new MercadoPagoException ($message, $response['status']);
+            throw new MercadoPagoException($message, $response['status']);
         }
 
         curl_close($connect);
@@ -538,7 +563,8 @@ class MPRestClient {
         return $response;
     }
 
-    private static function build_query($params) {
+    private static function build_query($params)
+    {
         if (function_exists("http_build_query")) {
             return http_build_query($params, "", "&");
         } else {
@@ -550,33 +576,39 @@ class MPRestClient {
         }
     }
 
-    public static function get($request) {
+    public static function get($request)
+    {
         $request["method"] = "GET";
 
         return self::exec($request);
     }
 
-    public static function post($request) {
+    public static function post($request)
+    {
         $request["method"] = "POST";
 
         return self::exec($request);
     }
 
-    public static function put($request) {
+    public static function put($request)
+    {
         $request["method"] = "PUT";
 
         return self::exec($request);
     }
 
-    public static function delete($request) {
+    public static function delete($request)
+    {
         $request["method"] = "DELETE";
 
         return self::exec($request);
     }
 }
 
-class MercadoPagoException extends Exception {
-    public function __construct($message, $code = 500, Exception $previous = null) {
+class MercadoPagoException extends Exception
+{
+    public function __construct($message, $code = 500, Exception $previous = null)
+    {
         // Default code 500
         parent::__construct($message, $code, $previous);
     }
