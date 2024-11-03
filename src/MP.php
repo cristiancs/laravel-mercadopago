@@ -540,8 +540,8 @@ class MPRestClient
 
         $message = "";
         if ($response['status'] >= 400) {
-
-
+            if (isset($response['response']['message']))
+                $message = $response['response']['message'];
             if (isset($response['response']['ErrorMessage']))
                 $message = $response['response']['ErrorMessage'];
 
