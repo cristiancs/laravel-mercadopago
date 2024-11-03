@@ -93,7 +93,7 @@ class MP
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
 
         $request = array(
-            "uri" => $uri_prefix . "/collections/notifications/{$id}",
+            "uri" => $uri_prefix . "/v1/payments/{$id}",
             "params" => array(
                 "access_token" => $this->get_access_token()
             )
